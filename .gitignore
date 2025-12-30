@@ -2,3 +2,4 @@ data/
 data
 models
 images
+__pycache__/
