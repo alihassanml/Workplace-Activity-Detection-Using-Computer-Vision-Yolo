@@ -7,7 +7,11 @@ import numpy as np
 import time
 from datetime import timedelta
 
-model = YOLO('models/yolov8s.pt')
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+path = 'models/yolov8s.pt'
+model = YOLO(path)
 print("Model classes:", model.names)
 
 # Queues for thread communication
@@ -243,7 +247,7 @@ while True:
     frame_count += 1
     
     # Send every 4th frame to detection thread
-    if frame_count % 4 == 0 and not frame_queue.full():
+    if frame_count % 2 == 0 and not frame_queue.full():
         frame_queue.put(frame.copy())
     
     # Get latest detection result
