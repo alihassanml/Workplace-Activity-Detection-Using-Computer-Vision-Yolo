@@ -1,4 +1,4 @@
-# Workplace Activity Detection — Video Analytics System
+# Workplace Activity Detection Video Analytics System
 
 ## 📄 Overview  
 This repository contains a custom AI‑powered video analytics system for workplace monitoring.  
