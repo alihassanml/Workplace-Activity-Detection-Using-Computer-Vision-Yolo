@@ -1,0 +1,25 @@
+{
+  "time_limits": {
+    "phone": 15,
+    "smoking": 0,
+    "eating": 0,
+    "sleeping": 0,
+    "person": 0
+  },
+  "confidence_thresholds": {
+    "smoking": 0.5,
+    "eating": 0.3,
+    "sleeping": 0.25,
+    "phone": 0.25,
+    "person": 0.35,
+    "bed": 0.3,
+    "chair": 0.3,
+    "couch": 0.3
+  },
+  "sound_on_start": [
+    "eating"
+  ],
+  "sound_on_time_limit": [
+    "phone"
+  ]
+}

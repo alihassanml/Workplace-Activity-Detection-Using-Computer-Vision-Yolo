@@ -113,7 +113,8 @@ class ControlPanel:
             return frame
         
         h, w = frame.shape[:2]
-        panel = np.zeros((h, self.width, 3), dtype=np.uint8)
+        panel_height = h + 200 
+        panel = np.zeros((panel_height, self.width, 3), dtype=np.uint8)
         panel[:] = (40, 40, 40)  # Dark background
         
         y = 20
@@ -152,7 +153,9 @@ class ControlPanel:
             cv2.putText(panel, activity.upper(), (text_x, text_y),
                        cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1)
         
-        y += 100
+        # Update y position after buttons
+        # Buttons end at: y (original) + 40 (row 1) + 30 (height) = y + 70
+        y += 85  # Reduced from 100 to save space
         
         # Selected activity settings
         activity = self.selected_activity
@@ -206,7 +209,7 @@ class ControlPanel:
             count = activity_counts[act]
             conf_val = settings.confidence_thresholds.get(act, 0.25)
             
-            color = (0, 255, 0) if count > 0 else (100, 100, 100)
+            color = (0, 255, 0) if count > 0 else (180, 180, 180)
             cv2.putText(panel, f"{act.capitalize()}: {count}", (20, y),
                        cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1)
             cv2.putText(panel, f"conf:{conf_val:.2f}", (160, y),
@@ -224,8 +227,18 @@ class ControlPanel:
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         
         # Combine panel with frame
-        combined = np.hstack([panel, frame])
+        
+        w = int(w * 1.3)
+        frame_resized = cv2.resize(
+            frame,
+            (w, panel_height),
+            interpolation=cv2.INTER_LINEAR
+        )
+
+
+        combined = np.hstack([panel, frame_resized])
         return combined
+
     
     def draw_slider(self, panel, label, value, min_val, max_val, x, y, slider_id):
         """Draw a slider control"""
@@ -308,8 +321,8 @@ class ControlPanel:
         # Sound checkboxes
         checkbox_y_start = 370  # Aligned with visual draw position (was 280)
         
-        # On Start checkbox
-        if 20 <= x <= 40 and checkbox_y_start <= y <= checkbox_y_start + 20:
+        # On Start checkbox (User requested 355-373 range)
+        if 20 <= x <= 40 and 355 <= y <= 373:
             if activity in settings.sound_on_start:
                 settings.sound_on_start.remove(activity)
             else:
@@ -318,7 +331,7 @@ class ControlPanel:
         
         # On Time Limit checkbox
         checkbox_y_start += 30  # 400
-        if 20 <= x <= 40 and checkbox_y_start <= y <= checkbox_y_start + 20:
+        if 20 <= x <= 40 and 386 <= y <= 404:
             if activity in settings.sound_on_time_limit:
                 settings.sound_on_time_limit.remove(activity)
             else:
@@ -638,8 +651,8 @@ detector = threading.Thread(target=detection_thread, daemon=True)
 detector.start()
 
 cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 640)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)  # Reduced from 1280 to fit standard screens
 
 annotated_frame = None
 frame_count = 0
@@ -665,7 +678,7 @@ print("✓ Press 'S' to save settings")
 print("✓ Press 'P' to toggle panel")
 print("✓ Press ESC to quit\n")
 
-cv2.namedWindow('Smart Activity Tracker')
+cv2.namedWindow('Smart Activity Tracker', cv2.WINDOW_NORMAL)
 cv2.setMouseCallback('Smart Activity Tracker', mouse_callback)
 
 while True:
